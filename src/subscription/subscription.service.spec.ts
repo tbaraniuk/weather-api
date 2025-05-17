@@ -3,6 +3,7 @@ import { SubscriptionService } from './subscription.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Subscription } from './entities/subscription.entity';
 import { User } from './entities/user.entity';
+import { MailerService } from '@nestjs-modules/mailer';
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
@@ -17,6 +18,10 @@ describe('SubscriptionService', () => {
     save: jest.fn(),
   };
 
+  const mockMailerService = {
+    sendMail: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -28,6 +33,10 @@ describe('SubscriptionService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
+        },
+        {
+          provide: MailerService,
+          useValue: mockMailerService,
         },
       ],
     }).compile();

@@ -1,6 +1,4 @@
-import { Controller, Get, Post, Param, Query } from '@nestjs/common';
-import { SubscriptionService } from './subscription.service';
-import { CreateSubscriptionDto } from './dto/subscription.dto';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -8,19 +6,13 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
+import { CreateSubscriptionDto } from './dto/subscription.dto';
+import { TokenDto } from './dto/token.dto';
+import { SubscriptionService } from './subscription.service';
+
 @Controller('')
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
-
-  @Get('')
-  async listAll() {
-    return await this.subscriptionService.listAllSubscriptions();
-  }
-
-  @Get('users')
-  async listAllUsers() {
-    return await this.subscriptionService.listAllUsers();
-  }
 
   @Post('subscribe')
   @ApiOperation({
@@ -52,8 +44,8 @@ export class SubscriptionController {
     description:
       'Confirms a subscription using the token sent in the confirmation email.',
   })
-  async confirm(@Param('token') token: string) {
-    return await this.subscriptionService.confirmToken(token);
+  async confirm(@Param() params: TokenDto) {
+    return await this.subscriptionService.confirmToken(params.token);
   }
 
   @Get('unsubscribe/:token')
@@ -62,7 +54,7 @@ export class SubscriptionController {
     description:
       'Unsubscribes an email from weather updates using the token sent in emails.',
   })
-  async unsubscribe(@Param('token') token: string) {
-    return await this.subscriptionService.unsubscribe(token);
+  async unsubscribe(@Param() params: TokenDto) {
+    return await this.subscriptionService.unsubscribe(params.token);
   }
 }

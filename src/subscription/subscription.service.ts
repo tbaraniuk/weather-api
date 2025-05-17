@@ -1,12 +1,15 @@
+import { Repository } from 'typeorm';
+
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateSubscriptionDto } from './dto/subscription.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+
+import { CreateSubscriptionDto } from './dto/subscription.dto';
 import { Subscription } from './entities/subscription.entity';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -15,20 +18,11 @@ export class SubscriptionService {
     @InjectRepository(Subscription)
     private subscriptionsRepository: Repository<Subscription>,
     @InjectRepository(User) private usersRepository: Repository<User>,
+    private readonly mailService: MailerService,
   ) {}
-
-  async listAllSubscriptions() {
-    return await this.subscriptionsRepository.find({});
-  }
-
-  async listAllUsers() {
-    return await this.usersRepository.find({});
-  }
 
   async create(data: CreateSubscriptionDto) {
     try {
-      console.log(data);
-
       const existedSubscription = await this.subscriptionsRepository.findOne({
         where: {
           user: {
@@ -37,8 +31,6 @@ export class SubscriptionService {
           city: data?.city.toLowerCase(),
         },
       });
-
-      console.log(existedSubscription);
 
       if (existedSubscription?.id) {
         throw new ConflictException('Email already subscribed');
@@ -58,15 +50,18 @@ export class SubscriptionService {
       }
 
       const subscription = new Subscription();
+      const token = this.generate8DigitToken();
 
       subscription.user = user;
       subscription.city = data.city.toLowerCase();
       subscription.frequency = data.frequency;
-      subscription.token = this.generate8DigitToken();
+      subscription.token = token;
 
       await this.subscriptionsRepository.save(subscription);
 
-      return `Subscription successful. Confirmation email sent.\nYour token: ${subscription.token}`;
+      await this.sendConfirmationEmail(data.email, token);
+
+      return `Subscription successful. Confirmation email sent`;
     } catch (error) {
       throw error;
     }
@@ -74,6 +69,14 @@ export class SubscriptionService {
 
   generate8DigitToken(): string {
     return Math.floor(10000000 + Math.random() * 90000000).toString();
+  }
+
+  async sendConfirmationEmail(email: string, token: string) {
+    await this.mailService.sendMail({
+      to: email,
+      subject: 'Confirm your email to activate weather updates',
+      text: `Your confirmation token is: ${token}`,
+    });
   }
 
   async confirmToken(token: string) {

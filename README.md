@@ -9,6 +9,7 @@ A NestJS-based API for managing weather subscriptions, providing weather data vi
 - ✅ Subscribe to weather updates by email and city.
 - 🔁 Choose update frequency: `hourly` or `daily`.
 - 🌐 Integration with [WeatherAPI.com](https://www.weatherapi.com/) for live weather data.
+- 📩 Integraton with Mailtrap for sending verification email.
 - 📊 PostgreSQL with TypeORM.
 - 🧪 Unit tested using Jest.
 
@@ -38,6 +39,11 @@ POSTGRES_PORT=
 POSTGRES_USER=
 POSTGRES_PASSWORD=
 POSTGRES_DB=
+
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USERNAME=
+EMAIL_PASSWORD=
 ```
 
 ## How to run

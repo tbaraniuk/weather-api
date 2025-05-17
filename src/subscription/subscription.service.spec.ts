@@ -1,9 +1,10 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubscriptionService } from './subscription.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
+
 import { Subscription } from './entities/subscription.entity';
 import { User } from './entities/user.entity';
-import { MailerService } from '@nestjs-modules/mailer';
+import { SubscriptionService } from './subscription.service';
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;

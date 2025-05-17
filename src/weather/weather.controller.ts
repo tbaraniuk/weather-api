@@ -1,15 +1,16 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { WeatherService } from './weather.service';
 import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
 } from '@nestjs/swagger';
+
 import {
   WeatherNotFoundResponseDto,
   WeatherOkResponseDto,
 } from './dto/weather-response.dto';
+import { WeatherService } from './weather.service';
 
 @Controller('weather')
 export class WeatherController {

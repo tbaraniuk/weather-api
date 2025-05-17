@@ -12,6 +12,16 @@ import {
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
+  @Get('')
+  async listAll() {
+    return await this.subscriptionService.listAllSubscriptions();
+  }
+
+  @Get('users')
+  async listAllUsers() {
+    return await this.subscriptionService.listAllUsers();
+  }
+
   @Post('subscribe')
   @ApiOperation({
     summary: 'Subscribe to weather updates',

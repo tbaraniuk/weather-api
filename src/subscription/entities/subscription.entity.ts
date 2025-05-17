@@ -44,6 +44,8 @@ export class Subscription {
 
   @ApiProperty({ example: false, description: 'Email confirmed' })
   @IsBoolean()
-  @Column()
+  @Column({
+    default: false,
+  })
   emailConfirmed: boolean;
 }

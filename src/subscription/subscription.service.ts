@@ -17,18 +17,30 @@ export class SubscriptionService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
+  async listAllSubscriptions() {
+    return await this.subscriptionsRepository.find({});
+  }
+
+  async listAllUsers() {
+    return await this.usersRepository.find({});
+  }
+
   async create(data: CreateSubscriptionDto) {
     try {
-      const isSubscriptionExists = await this.subscriptionsRepository.findOne({
+      console.log(data);
+
+      const existedSubscription = await this.subscriptionsRepository.findOne({
         where: {
           user: {
             email: data?.email,
           },
-          city: data?.city,
+          city: data?.city.toLowerCase(),
         },
       });
 
-      if (isSubscriptionExists) {
+      console.log(existedSubscription);
+
+      if (existedSubscription?.id) {
         throw new ConflictException('Email already subscribed');
       }
 
@@ -54,7 +66,7 @@ export class SubscriptionService {
 
       await this.subscriptionsRepository.save(subscription);
 
-      return 'Subscription successful. Confirmation email sent.';
+      return `Subscription successful. Confirmation email sent.\nYour token: ${subscription.token}`;
     } catch (error) {
       throw error;
     }
@@ -80,15 +92,31 @@ export class SubscriptionService {
 
       await this.subscriptionsRepository.save(subscription);
 
-      return `Subscription confirmed successfully`;
+      return 'Subscription confirmed successfully';
     } catch (error) {
       throw error;
     }
   }
 
   async unsubscribe(token: string) {
-    console.log(token);
+    try {
+      const subscription = await this.subscriptionsRepository.findOne({
+        where: {
+          token: token,
+        },
+      });
 
-    return `Unsubscribed successfully`;
+      if (!subscription.id) {
+        throw new NotFoundException('Token not found');
+      }
+
+      await this.subscriptionsRepository.delete({
+        token: token,
+      });
+
+      return 'Unsubscribed successfully';
+    } catch (error) {
+      throw error;
+    }
   }
 }

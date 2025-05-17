@@ -48,8 +48,6 @@ export class WeatherController {
 
       return response;
     } catch (error) {
-      console.log('An error occurred!');
-
       throw error;
     }
   }

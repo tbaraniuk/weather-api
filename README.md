@@ -48,10 +48,17 @@ EMAIL_PASSWORD=
 
 ## How to run
 
-to run this application through Docker you need to run this command:
+To run this application through Docker you need to run this command:
 
 ```bash
 docker-compose up --build
+```
+
+The API is accessible with this link:
+
+```bash
+http://localhost:{your_server_port}/api
+
 ```
 
 ## 📚 API Docs

@@ -2,6 +2,8 @@ import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -20,7 +22,7 @@ export class SubscriptionController {
     description:
       'Subscribe an email to receive weather updates for a specific city with chosen frequency.',
   })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     example: 'Subscription successful. Confirmation email sent.',
   })
   @ApiConflictResponse({ example: 'Email already subscribed' })
@@ -44,6 +46,22 @@ export class SubscriptionController {
     description:
       'Confirms a subscription using the token sent in the confirmation email.',
   })
+  @ApiOkResponse({
+    example: 'Subscription confirmed successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input',
+    schema: {
+      example: {
+        message: ['Invalid token'],
+        error: 'Bad Request',
+        statusCode: 400,
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    example: 'Token not found',
+  })
   async confirm(@Param() params: TokenDto) {
     return await this.subscriptionService.confirmToken(params.token);
   }
@@ -53,6 +71,22 @@ export class SubscriptionController {
     summary: 'Unsubscribe from weather updates',
     description:
       'Unsubscribes an email from weather updates using the token sent in emails.',
+  })
+  @ApiOkResponse({
+    example: 'Unsubscribed successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input',
+    schema: {
+      example: {
+        message: ['Invalid token'],
+        error: 'Bad Request',
+        statusCode: 400,
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    example: 'Token not found',
   })
   async unsubscribe(@Param() params: TokenDto) {
     return await this.subscriptionService.unsubscribe(params.token);

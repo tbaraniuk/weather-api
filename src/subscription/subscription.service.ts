@@ -4,6 +4,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +15,10 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class SubscriptionService {
+  private readonly logger = new Logger(SubscriptionService.name, {
+    timestamp: true,
+  });
+
   constructor(
     @InjectRepository(Subscription)
     private subscriptionsRepository: Repository<Subscription>,
@@ -63,6 +68,8 @@ export class SubscriptionService {
 
       return `Subscription successful. Confirmation email sent`;
     } catch (error) {
+      this.logger.error(error);
+
       throw error;
     }
   }
@@ -87,7 +94,7 @@ export class SubscriptionService {
         },
       });
 
-      if (!subscription.id) {
+      if (!subscription?.id) {
         throw new NotFoundException('Token not found');
       }
 
@@ -97,6 +104,8 @@ export class SubscriptionService {
 
       return 'Subscription confirmed successfully';
     } catch (error) {
+      this.logger.error(error);
+
       throw error;
     }
   }
@@ -109,7 +118,7 @@ export class SubscriptionService {
         },
       });
 
-      if (!subscription.id) {
+      if (!subscription?.id) {
         throw new NotFoundException('Token not found');
       }
 
@@ -119,6 +128,8 @@ export class SubscriptionService {
 
       return 'Unsubscribed successfully';
     } catch (error) {
+      this.logger.error(error);
+
       throw error;
     }
   }

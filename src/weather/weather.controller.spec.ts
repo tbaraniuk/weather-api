@@ -33,7 +33,7 @@ describe('WeatherController', () => {
   it('should return current weather', async () => {
     const city = 'Kyiv';
 
-    await controller.getCurrentWeather(city);
+    await controller.getCurrentWeather({ city: city });
 
     expect(mockWeatherService.fetchWeatherData).toHaveBeenCalledWith(city);
   });

@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsEnum, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -23,7 +29,11 @@ export class Subscription {
     example: 'Kyiv',
     description: 'City for weather updates',
   })
-  @IsString()
+  @IsString({ message: 'City name should be a string' })
+  @IsNotEmpty({ message: 'City name cannot be empty' })
+  @Matches(/^[^\d]+$/, {
+    message: 'City name must not contain digits',
+  })
   @Column()
   city: string;
 

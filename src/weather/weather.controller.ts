@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
 } from '@nestjs/swagger';
 
 import {
@@ -11,6 +11,7 @@ import {
   WeatherOkResponseDto,
 } from './dto/weather-response.dto';
 import { WeatherService } from './weather.service';
+import { CityDto } from './dto/city.dto';
 
 @Controller('weather')
 export class WeatherController {
@@ -22,34 +23,35 @@ export class WeatherController {
     description:
       'Returns the current weather forecast for the specified city using WeatherAPI.com.',
   })
-  @ApiQuery({
-    name: 'city',
-    type: String,
-    description: 'City name for weather forecast',
-  })
   @ApiOkResponse({
     type: WeatherOkResponseDto,
     description: 'Successful operation - current weather forecast returned',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid input',
+    schema: {
+      example: {
+        message: ['City name must not contain digits'],
+        error: 'Bad Request',
+        statusCode: 400,
+      },
+    },
   })
   @ApiNotFoundResponse({
     type: WeatherNotFoundResponseDto,
     description: 'City not found',
   })
   async getCurrentWeather(
-    @Query('city') city: string,
+    @Query() queries: CityDto,
   ): Promise<WeatherOkResponseDto> {
-    try {
-      const data = await this.weatherService.fetchWeatherData(city);
+    const data = await this.weatherService.fetchWeatherData(queries.city);
 
-      const response = {
-        temperature: data?.current?.temp_c,
-        humidity: data?.current?.humidity,
-        description: data?.current?.condition?.text,
-      };
+    const response = {
+      temperature: data?.current?.temp_c,
+      humidity: data?.current?.humidity,
+      description: data?.current?.condition?.text ?? '',
+    };
 
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return response;
   }
 }

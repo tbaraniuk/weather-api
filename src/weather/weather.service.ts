@@ -1,10 +1,14 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class WeatherService {
+  private readonly logger = new Logger(WeatherService.name, {
+    timestamp: true,
+  });
+
   constructor(private readonly httpService: HttpService) {}
 
   async fetchWeatherData(city: string) {
@@ -18,8 +22,8 @@ export class WeatherService {
         })
         .pipe(
           catchError((error: AxiosError) => {
-            console.log(`Error code: ${error.code}`);
-            console.log(`Error status: ${error.status}`);
+            this.logger.error(`Error code: ${error.code}`);
+            this.logger.error(`Error status: ${error.status}`);
 
             if (error.status == 400) {
               throw new NotFoundException('City not found');
